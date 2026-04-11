@@ -20,6 +20,14 @@ public abstract class Call {
     this.durationInMinutes=durationInMinutes;
   }
 
+  public LocalDateTime getStartDateTime() {
+    return startDateTime;
+  }
+
+  public int getDurationInMinutes() {
+    return durationInMinutes;
+  }
+
   public abstract CallType getType();
 
   public abstract BigDecimal calculateCost();
