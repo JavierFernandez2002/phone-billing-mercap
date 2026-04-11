@@ -1,4 +1,7 @@
 package org.example.models;
 
-public class CallType {
+public enum CallType {
+  LOCAL,
+  NATIONAL,
+  INTERNATIONAL
 }
