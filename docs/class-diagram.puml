@@ -1,0 +1,129 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+
+package "org.example.model" {
+
+  enum CallType {
+    LOCAL
+    NATIONAL
+    INTERNATIONAL
+  }
+
+  abstract class Call {
+    - startDateTime: LocalDateTime
+    - durationInMinutes: int
+    + getStartDateTime(): LocalDateTime
+    + getDurationInMinutes(): int
+    + getType(): CallType
+    + calculateCost(): BigDecimal
+    + getDescription(): String
+  }
+
+  class LocalCall {
+    - pricingStrategy: LocalCallPricingStrategy
+    + getType(): CallType
+    + calculateCost(): BigDecimal
+    + getDescription(): String
+  }
+
+  class NationalCall {
+    - destinationLocality: String
+    - pricingRepository: NationalPricingRepository
+    + getDestinationLocality(): String
+    + getType(): CallType
+    + calculateCost(): BigDecimal
+    + getDescription(): String
+  }
+
+  class InternationalCall {
+    - destinationCountry: String
+    - pricingRepository: InternationalPricingRepository
+    + getDestinationCountry(): String
+    + getType(): CallType
+    + calculateCost(): BigDecimal
+    + getDescription(): String
+  }
+
+  class Customer {
+    - name: String
+    - phoneNumber: String
+    - monthlyBaseFee: BigDecimal
+    - calls: List<Call>
+    + addCall(call: Call): void
+    + getName(): String
+    + getPhoneNumber(): String
+    + getMonthlyBaseFee(): BigDecimal
+    + getCalls(): List<Call>
+  }
+
+  class Invoice {
+    - customerName: String
+    - phoneNumber: String
+    - billingPeriod: YearMonth
+    - monthlyBaseFee: BigDecimal
+    - localCallsTotal: BigDecimal
+    - nationalCallsTotal: BigDecimal
+    - internationalCallsTotal: BigDecimal
+    - totalAmount: BigDecimal
+    + getCustomerName(): String
+    + getPhoneNumber(): String
+    + getBillingPeriod(): YearMonth
+    + getMonthlyBaseFee(): BigDecimal
+    + getLocalCallsTotal(): BigDecimal
+    + getNationalCallsTotal(): BigDecimal
+    + getInternationalCallsTotal(): BigDecimal
+    + getTotalAmount(): BigDecimal
+  }
+}
+
+package "org.example.pricing" {
+
+  class LocalCallPricingStrategy {
+    + getRateFor(startDateTime: LocalDateTime): BigDecimal
+  }
+
+  class NationalPricingRepository {
+    - ratesByLocality: Map<String, BigDecimal>
+    + addRate(locality: String, ratePerMinute: BigDecimal): void
+    + getRateFor(locality: String): BigDecimal
+  }
+
+  class InternationalPricingRepository {
+    - ratesByCountry: Map<String, BigDecimal>
+    + addRate(country: String, ratePerMinute: BigDecimal): void
+    + getRateFor(country: String): BigDecimal
+  }
+}
+
+package "org.example.service" {
+
+  class BillingService {
+    + generateInvoice(customer: Customer, billingPeriod: YearMonth): Invoice
+  }
+
+  class InvoicePrinter {
+    + print(invoice: Invoice): void
+  }
+}
+
+
+Call <|-- LocalCall
+Call <|-- NationalCall
+Call <|-- InternationalCall
+
+Customer "1" o-- "*" Call
+BillingService ..> Customer
+BillingService ..> Invoice
+BillingService ..> Call
+
+InvoicePrinter ..> Invoice
+
+LocalCall --> LocalCallPricingStrategy
+NationalCall --> NationalPricingRepository
+InternationalCall --> InternationalPricingRepository
+
+Call --> CallType
+
+
+@enduml
