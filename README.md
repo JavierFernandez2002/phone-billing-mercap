@@ -55,8 +55,34 @@ Main.java
 - The base fee is fixed per customer.
 - No taxes, discounts, or persistence were included.
 
-## How to run
+## Requirements
 
-1. Compile the project
-2. Run `Main`
-3. The program prints an example invoice
+- Java 17
+- Maven 3.8+ (only needed to run the JUnit test suite)
+
+## Run with Maven
+
+Compile and run tests:
+
+```bash
+mvn clean test
+```
+
+Run the main program:
+``` bash
+mvn compile exec:java "-Dexec.mainClass=org.example.Main"
+```
+
+## Run with plain Java 17 only
+
+Compile:
+``` PowerShell
+mkdir out
+$files = Get-ChildItem -Recurse src/main/java -Filter *.java | ForEach-Object { $_.FullName }
+javac -d out $files
+```
+Run:
+``` PowerShell
+java -cp out org.example.Main
+```
+
